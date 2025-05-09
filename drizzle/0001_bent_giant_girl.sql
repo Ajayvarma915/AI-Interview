@@ -1,0 +1,1 @@
+ALTER TABLE "user_answer" RENAME COLUMN "mockIdRef" TO "mockId";

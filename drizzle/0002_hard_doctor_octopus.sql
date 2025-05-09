@@ -1,0 +1,1 @@
+ALTER TABLE "user_answer" ALTER COLUMN "mockId" SET DATA TYPE varchar(255);

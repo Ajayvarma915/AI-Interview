@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1746627391934,
+      "tag": "0000_elite_warstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1746634076334,
+      "tag": "0001_bent_giant_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1746634104669,
+      "tag": "0002_hard_doctor_octopus",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1746779947872,
+      "tag": "0003_tranquil_warhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1746797145250,
+      "tag": "0004_flaky_nightshade",
+      "breakpoints": true
+    }
+  ]
+}
