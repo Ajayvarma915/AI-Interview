@@ -13,7 +13,7 @@ export const ai_interview = pgTable('ai_interview', {
 
 export const userAnswer = pgTable('user_answer', {
     id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
-    mockIdRef: varchar('mockId', { length: 255 }).notNull(), // Renamed from mockId to mockIdRef
+    mockIdRef: varchar('mockId', { length: 255 }).notNull(),
     question: text('question'),
     correctAns: text('correctAns'),
     userAns: text('userAns'),

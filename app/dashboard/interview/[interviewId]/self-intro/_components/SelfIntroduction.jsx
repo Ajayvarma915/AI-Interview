@@ -141,7 +141,12 @@ const SelfIntroduction = () => {
             const feedbackPrompt =
                 'Self-Introduction: ' +
                 userAns +
-                ', For the given self-introduction for a job interview, please provide a rating out of 10 and feedback for improvement in 3 to 5 lines in JSON format with rating and feedback fields.';
+                '. Based on this self-introduction, please return a JSON object with the following keys: \n' +
+                '- "rating": rating out of 10,\n' +
+                '- "feedback": 3-5 lines on areas of improvement,\n' +
+                '- "idealAnswer": an ideal self-introduction for a job interview of 4-5 sentences.\n' +
+                'Please return a clean JSON object only.';
+
             const maxRetries = 3;
             let retryCount = 0;
             let success = false;
@@ -157,19 +162,25 @@ const SelfIntroduction = () => {
                     if (!jsonMatch) {
                         throw new Error('No valid JSON found in API response');
                     }
+
                     mockJsonResp = jsonMatch[0];
                     console.log('Extracted JSON:', mockJsonResp);
 
                     const JsonFeedbackResp = JSON.parse(mockJsonResp);
+
+                    if (!JsonFeedbackResp.rating || !JsonFeedbackResp.feedback || !JsonFeedbackResp.idealAnswer) {
+                        throw new Error('Incomplete AI response');
+                    }
+
                     success = true;
 
                     const resp = await db.insert(userAnswer).values({
                         mockIdRef: params.interviewId,
                         question: 'Self-Introduction',
-                        correctAns: null,
+                        correctAns: JsonFeedbackResp.idealAnswer,
                         userAns: userAns,
-                        feedback: JsonFeedbackResp?.feedback,
-                        rating: JsonFeedbackResp?.rating,
+                        feedback: JsonFeedbackResp.feedback,
+                        rating: JsonFeedbackResp.rating,
                         userEmail: user?.primaryEmailAddress?.emailAddress,
                         createdAt: moment().format('DD-MM-YYYY'),
                     });
@@ -182,7 +193,7 @@ const SelfIntroduction = () => {
                     console.error('Error in saveSelfIntroduction:', error);
                     retryCount++;
                     if (retryCount === maxRetries) {
-                        toast.error('Failed to submit self-introduction due to invalid API response. Please try again.');
+                        toast.error('Failed to submit self-introduction due to invalid AI response. Please try again.');
                         setDeviceError('Error processing your submission. Please try again.');
                         return;
                     }
@@ -194,6 +205,7 @@ const SelfIntroduction = () => {
             console.log('Loading cleared:', loading);
         }
     };
+    
 
     const canRecord = hasCamera && hasMic && !loading && !deviceError && redirectCountdown === null;
     const canSubmit = userAns.length > 5 && !loading && !isRecording && redirectCountdown === null;
@@ -214,9 +226,9 @@ const SelfIntroduction = () => {
             {deviceError && (
                 <p className='text-red-500 mb-5'>{deviceError}</p>
             )}
-            {userAns && (
+            {/* {userAns && (
                 <p className='text-gray-500 mb-5'>Current transcript: {userAns}</p>
-            )}
+            )} */}
             {!hasCamera || !hasMic ? (
                 <Button onClick={requestPermissions} className='mb-5' disabled={redirectCountdown !== null}>
                     Allow Camera and Microphone

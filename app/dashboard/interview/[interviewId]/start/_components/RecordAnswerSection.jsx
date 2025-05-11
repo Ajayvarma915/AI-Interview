@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { db } from '@/utils/db';
 import { chatSession } from '@/utils/GeminiAI';
-import { userAnswer } from '@/utils/schema';
 import { useUser } from '@clerk/nextjs';
 import { Mic, StopCircle } from 'lucide-react';
 import moment from 'moment';
@@ -12,9 +11,10 @@ import useSpeechToText from 'react-hook-speech-to-text';
 import Webcam from 'react-webcam';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { userAnswer } from '@/utils/schema';
 
-const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interviewData }) => {
-    const [userAnswer, setUserAnswer] = useState('');
+const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interviewData, goToNextQuestion, goToPrevQuestion }) => {
+    const [UserAnswer, setUserAnswer] = useState('');
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -53,7 +53,7 @@ const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interview
             'Question: ' +
             mockInterviewQuestions[activeQuestion].Question +
             ', User Answer: ' +
-            userAnswer +
+            UserAnswer +
             ', Depends on question and user answer for given interview question ' +
             'please give us rating out of 10 for answer and feedback as area of improvement if any ' +
             'in just 3 to 5 lines to improve it in JSON format with rating field and feedback field';
@@ -74,11 +74,11 @@ const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interview
                 return;
             }
 
-            const resp = await db.insert(userAnswer).values({
-                mockIdRef: interviewData.mockId, // Fixed from mockIdRef to mockId
+            await db.insert(userAnswer).values({
+                mockIdRef: interviewData.mockId,
                 question: mockInterviewQuestions[activeQuestion].Question,
                 correctAns: mockInterviewQuestions[activeQuestion].Answer,
-                userAns: userAnswer,
+                userAns: UserAnswer,
                 feedback: jsonFeedbackResp.feedback,
                 rating: jsonFeedbackResp.rating,
                 userEmail: user?.primaryEmailAddress?.emailAddress,
@@ -89,11 +89,12 @@ const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interview
             setResults([]);
             setUserAnswer('');
 
-            // Check if this is the last question
             if (activeQuestion === mockInterviewQuestions.length - 1) {
                 setTimeout(() => {
-                    router.push(`/dashboard/interview/${interviewData.mockId}/feedback`); // Fixed mockIdref to mockId
+                    router.push(`/dashboard/interview/${interviewData.mockId}/feedback`);
                 }, 1000);
+            } else {
+                goToNextQuestion();
             }
         } catch (error) {
             console.error('Error saving answer:', error);
@@ -110,21 +111,25 @@ const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interview
     }, [results]);
 
     useEffect(() => {
-        if (!isRecording && userAnswer.length > 10) {
+        if (!isRecording && UserAnswer.length > 10) {
             UpdateUserAnswer();
         }
-    }, [userAnswer, isRecording]);
+    }, [UserAnswer, isRecording]);
 
     return (
         <div className='flex justify-center items-center flex-col'>
-            <div className='flex flex-col justify-center mt-20 items-center bg-black rounded-lg p-5'>
+            <h2 className='text-lg font-semibold mb-4'>Question {activeQuestion + 1}</h2>
+            <p className='max-w-2xl text-center mb-4'>{mockInterviewQuestions[activeQuestion]?.Question}</p>
+
+            <div className='flex flex-col justify-center mt-6 items-center bg-black rounded-lg p-5'>
                 <Image src={'/webcam.png'} width={200} height={200} className='absolute' alt='missing image' />
                 <Webcam mirrored={true} style={{ height: 300, width: '100%', zIndex: 10 }} />
             </div>
+
             <Button
                 disabled={loading}
                 variant='outline'
-                className='my-10'
+                className='my-6'
                 onClick={startStopRecording}
             >
                 {isRecording ? (
@@ -137,7 +142,13 @@ const RecordAnswerSection = ({ mockInterviewQuestions, activeQuestion, interview
                     </>
                 )}
             </Button>
-            <Button onClick={() => console.log(userAnswer)}>Show User Answer</Button>
+
+            <div className='flex gap-4'>
+                <Button onClick={goToPrevQuestion} variant='secondary'>Previous</Button>
+                <Button onClick={UpdateUserAnswer} disabled={loading}>
+                    {activeQuestion === mockInterviewQuestions.length - 1 ? 'End Interview' : 'Submit & Next'}
+                </Button>
+            </div>
         </div>
     );
 };

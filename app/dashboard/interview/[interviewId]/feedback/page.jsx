@@ -50,7 +50,6 @@ const FeedbackPage = () => {
                         Find below your self-introduction and interview question feedback, including correct answers, your answers, and areas for improvement.
                     </h2>
 
-                    {/* Self-Introduction Feedback */}
                     {selfIntroFeedback && (
                         <div className='mt-7'>
                             <h3 className='text-xl font-semibold'>Self-Introduction</h3>
@@ -71,7 +70,6 @@ const FeedbackPage = () => {
                         </div>
                     )}
 
-                    {/* Question Feedback */}
                     <h3 className='text-xl font-semibold mt-7'>Interview Questions</h3>
                     {feedbackList.length === 0 ? (
                         <p className='text-gray-500 mt-3'>No question answers recorded.</p>
