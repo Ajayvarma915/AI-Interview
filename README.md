@@ -100,37 +100,6 @@ View Feedback:
 
 On the feedback page, review your self-introduction and question answers, including AI-generated ratings and feedback.
 
-
-
-Directory Structure
-Key directories and files in the project:
-interview-prep-app/
-├── app/
-│   ├── dashboard/
-│   │   ├── interview/
-│   │   │   ├── [interviewId]/
-│   │   │   │   ├── start/
-│   │   │   │   │   ├── page.jsx (Questions & Answers)
-│   │   │   │   │   ├── _components/
-│   │   │   │   │   │   ├── QuestionsSection.jsx
-│   │   │   │   │   │   ├── RecordAnswerSection.jsx
-│   │   │   │   ├── self-intro/
-│   │   │   │   │   ├── page.jsx (SelfIntroduction.jsx)
-│   │   │   │   ├── feedback/
-│   │   │   │   │   ├── page.jsx (FeedbackPage.jsx)
-│   │   ├── InterviewList.jsx
-│   │   ├── InterviewItemCard.jsx
-├── utils/
-│   ├── db.js (Database configuration)
-│   ├── GeminiAI.js (Gemini AI integration)
-│   ├── schema.js (Drizzle ORM schema)
-├── components/
-│   ├── ui/
-│   │   ├── button.jsx (Shadcn UI component)
-├── .gitignore
-├── package.json
-├── README.md
-
 Troubleshooting
 
 "No interview record found" on Feedback Page:
